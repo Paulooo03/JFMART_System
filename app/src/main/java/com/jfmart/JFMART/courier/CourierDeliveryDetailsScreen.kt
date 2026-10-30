@@ -1,17 +1,20 @@
-package com.jfmart.ui.courier
+package com.jfmart.JFMART.courier
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.jfmart.ui.components.WireframeListBox
+import com.jfmart.JFMART.components.WireframeListBox
 
 @Composable
-fun CourierDeliveryDetailsScreen() {
+fun CourierDeliveryDetailsScreen(
+    onBack: () -> Unit = {}
+) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -43,11 +46,19 @@ fun CourierDeliveryDetailsScreen() {
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        Button(
-            onClick = { },
-            modifier = Modifier.align(Alignment.CenterHorizontally)
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            Text("Generate QR")
+            OutlinedButton(onClick = onBack) {
+                Text("Back")
+            }
+
+            Button(
+                onClick = { }
+            ) {
+                Text("Generate QR")
+            }
         }
     }
 }

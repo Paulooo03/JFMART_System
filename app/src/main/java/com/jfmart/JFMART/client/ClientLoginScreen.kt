@@ -1,5 +1,4 @@
-package com.jfmart.ui.client
-
+package com.jfmart.JFMART.client
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -15,6 +14,10 @@ fun ClientLoginScreen(
     onSwitchToCourier: () -> Unit
 ) {
     var password by remember { mutableStateOf("") }
+    var isError by remember { mutableStateOf(false) }
+
+    // Temporary password for testing
+    val temporaryPassword = "1234"
 
     Column(
         modifier = Modifier
@@ -32,15 +35,36 @@ fun ClientLoginScreen(
 
         OutlinedTextField(
             value = password,
-            onValueChange = { password = it },
+            onValueChange = {
+                password = it
+                if (isError) isError = false // Clear error indicator while typing
+            },
             label = { Text("Password") },
+            isError = isError,
+            supportingText = {
+                if (isError) {
+                    Text(
+                        text = "Incorrect password. (Try: 1234)",
+                        color = MaterialTheme.colorScheme.error
+                    )
+                }
+            },
             visualTransformation = PasswordVisualTransformation(),
             modifier = Modifier.fillMaxWidth(0.85f)
         )
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        Button(onClick = onNavigateToDashboard, modifier = Modifier.width(120.dp)) {
+        Button(
+            onClick = {
+                if (password == temporaryPassword) {
+                    onNavigateToDashboard()
+                } else {
+                    isError = true
+                }
+            },
+            modifier = Modifier.width(120.dp)
+        ) {
             Text("Enter")
         }
 
