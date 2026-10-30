@@ -1,4 +1,4 @@
-package com.jfmart.ui.courier
+package com.jfmart.JFMART.courier
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.MaterialTheme
@@ -6,10 +6,13 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.jfmart.ui.components.StatusCardRow
+import com.jfmart.JFMART.components.StatusCardRow
 
 @Composable
-fun CourierDashboardScreen(onViewPending: () -> Unit) {
+fun CourierDashboardScreen(
+    onViewPending: () -> Unit = {},
+    onViewDelivered: () -> Unit = {} // Added missing parameter
+) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -29,7 +32,7 @@ fun CourierDashboardScreen(onViewPending: () -> Unit) {
         Text("Delivered orders", style = MaterialTheme.typography.titleMedium)
         StatusCardRow(
             label = "(Order number)",
-            onViewClick = onViewPending
+            onViewClick = onViewDelivered // Linked to onViewDelivered
         )
     }
 }

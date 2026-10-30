@@ -1,5 +1,4 @@
-package com.jfmart.ui.components
-
+package com.jfmart.JFMART.components
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape

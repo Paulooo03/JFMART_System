@@ -1,4 +1,4 @@
-package com.jfmart.ui.client
+package com.jfmart.JFMART.client
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
@@ -8,8 +8,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.jfmart.ui.components.WireframeListBox
-
+import com.jfmart.JFMART.components.WireframeListBox // ✅ Updated package
 @Composable
 fun ClientCartScreen(onBack: () -> Unit) {
     var searchQuery by remember { mutableStateOf("") }

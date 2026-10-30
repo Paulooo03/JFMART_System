@@ -1,17 +1,12 @@
-package com.jfmart.ui.components
+package com.jfmart.JFMART.components
 
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.Person
-import androidx.compose.material.icons.filled.ShoppingCart
-import androidx.compose.material3.Icon
-import androidx.compose.material3.NavigationBar
-import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material.icons.filled.*
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavController
 import androidx.navigation.NavGraph.Companion.findStartDestination
-import com.jfmart.ui.navigation.Screen
+import com.jfmart.JFMART.navigation.Screen
 
 @Composable
 fun ClientBottomNavigation(
@@ -66,34 +61,6 @@ fun ClientBottomNavigation(
                 }
             },
             icon = { Icon(Icons.Default.Person, contentDescription = "Account") }
-        )
-    }
-}
-
-@Composable
-fun CourierBottomNavigation(
-    navController: NavController,
-    currentRoute: String?
-) {
-    NavigationBar {
-        NavigationBarItem(
-            selected = currentRoute in listOf(
-                Screen.CourierDashboard.route,
-                Screen.CourierDeliveryDetails.route
-            ),
-            onClick = {
-                navController.navigate(Screen.CourierDashboard.route) {
-                    popUpTo(navController.graph.findStartDestination().id) { saveState = true }
-                    launchSingleTop = true
-                    restoreState = true
-                }
-            },
-            icon = { Icon(Icons.Default.Home, contentDescription = "Home") }
-        )
-        NavigationBarItem(
-            selected = false,
-            onClick = { },
-            icon = { Icon(Icons.Default.Person, contentDescription = "Profile") }
         )
     }
 }
