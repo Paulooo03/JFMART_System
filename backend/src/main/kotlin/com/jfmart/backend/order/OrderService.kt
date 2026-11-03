@@ -3,6 +3,9 @@ package com.jfmart.backend.order
 import com.jfmart.backend.auth.AuthPrincipal
 import com.jfmart.backend.auth.Role
 import com.jfmart.backend.client.ClientRepository
+import com.jfmart.backend.delivery.ACTIVE_DELIVERY_STATUSES
+import com.jfmart.backend.delivery.DeliveryRepository
+import com.jfmart.backend.delivery.DeliveryStatus
 import com.jfmart.backend.product.ProductRepository
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
@@ -15,7 +18,8 @@ import java.util.UUID
 class OrderService(
     private val orderRepository: OrderRepository,
     private val productRepository: ProductRepository,
-    private val clientRepository: ClientRepository
+    private val clientRepository: ClientRepository,
+    private val deliveryRepository: DeliveryRepository
 ) {
 
     // ---- client ----
@@ -107,6 +111,12 @@ class OrderService(
         val order = findOrder(orderId)
         if (order.status != OrderStatus.PENDING && order.status != OrderStatus.CONFIRMED) {
             throw conflict("Only pending or confirmed orders can be cancelled")
+        }
+        // A scheduled delivery must not stay on the courier's list for a cancelled order
+        deliveryRepository.findByOrderIdAndStatusIn(order.id, ACTIVE_DELIVERY_STATUSES).forEach {
+            it.status = DeliveryStatus.UNSUCCESSFUL
+            it.unsuccessfulReason = "Order cancelled"
+            it.qrExpiresAt = null
         }
         cancel(order, reason)
         return toResponse(order)
