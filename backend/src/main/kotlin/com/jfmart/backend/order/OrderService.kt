@@ -71,9 +71,13 @@ class OrderService(
     // ---- admin ----
 
     @Transactional(readOnly = true)
-    fun listForAdmin(status: OrderStatus?): List<OrderResponse> {
-        val orders = if (status == null) orderRepository.findAllByOrderByCreatedAtDesc()
-        else orderRepository.findByStatusOrderByCreatedAtDesc(status)
+    fun listForAdmin(status: OrderStatus?, clientId: Long?): List<OrderResponse> {
+        val orders = when {
+            clientId != null -> orderRepository.findByClientIdOrderByCreatedAtDesc(clientId)
+                .filter { status == null || it.status == status }
+            status != null -> orderRepository.findByStatusOrderByCreatedAtDesc(status)
+            else -> orderRepository.findAllByOrderByCreatedAtDesc()
+        }
         return toResponses(orders)
     }
 

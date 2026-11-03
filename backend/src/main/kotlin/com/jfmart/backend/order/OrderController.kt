@@ -45,8 +45,10 @@ class OrderController(private val orderService: OrderService) {
 class AdminOrderController(private val orderService: OrderService) {
 
     @GetMapping
-    fun list(@RequestParam(required = false) status: OrderStatus?): List<OrderResponse> =
-        orderService.listForAdmin(status)
+    fun list(
+        @RequestParam(required = false) status: OrderStatus?,
+        @RequestParam(required = false) clientId: Long?
+    ): List<OrderResponse> = orderService.listForAdmin(status, clientId)
 
     @PutMapping("/{orderId}/items/{itemId}")
     fun updateItem(

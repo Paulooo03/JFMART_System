@@ -5,6 +5,7 @@ import com.jfmart.backend.auth.Role
 import com.jfmart.backend.auth.User
 import com.jfmart.backend.auth.UserRepository
 import com.jfmart.backend.auth.UserStatus
+import com.jfmart.backend.billing.BillingService
 import com.jfmart.backend.client.ClientRepository
 import com.jfmart.backend.order.Order
 import com.jfmart.backend.order.OrderRepository
@@ -28,6 +29,7 @@ class DeliveryService(
     private val orderRepository: OrderRepository,
     private val clientRepository: ClientRepository,
     private val userRepository: UserRepository,
+    private val billingService: BillingService,
     @Value("\${jfmart.qr.expiry-minutes}") private val qrExpiryMinutes: Long
 ) {
     private val random = SecureRandom()
@@ -107,6 +109,7 @@ class DeliveryService(
         delivery.deliveredAt = now
         order.status = OrderStatus.DELIVERED
         order.deliveredAt = now
+        billingService.createInvoiceForDeliveredOrder(order, now.toLocalDate())
         return DeliveryConfirmedResponse(order.id, order.referenceNumber, now)
     }
 
