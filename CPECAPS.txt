@@ -1,0 +1,107 @@
+﻿Joyce Felice Minimart
+
+
+1. Mobile App
+
+
+Specific requests:
+* Mobile app
+Client Account
+1. Client Information
+* Client/hospital name
+* Contact person
+* Contact number
+* Email address
+* Delivery address
+* Department, if applicable
+2. Quotation OR Estimate
+   1. Display current product prices.
+   2. Show estimated total based on the requested quantity.
+   3. Example file ng current na pinapakita nila sa clients: https://drive.google.com/file/d/1pVoOEG_UyY69YOG32QVFRQo5KKymCDby/view?usp=sharing 
+3. Ordering
+* Since JF MiniMart supplies products beyond the listed items, clients should be able to request products that are not currently listed.
+* The request may contain the product name, quantity, preferred unit, and other instructions.
+4. Order Confirmation
+   1. Client receives confirmation after submitting an order.
+   2. The order should have a unique order/reference number. IMPORTANT
+   3. The client should be able to view the submitted order.
+5. Order Status
+   * Pending
+   * Confirmed
+   * Out for Delivery
+   * Delivered
+   * Cancelled, if applicable
+* Order History
+   * View previous orders
+   * View order date
+   * View delivered date
+   * View items and quantities
+   * View order amount
+6. Delivery Confirmation
+* Client scans the QR code upon receiving the order.
+* The system records the date and time of delivery.
+* The order status changes to Delivered after successful QR confirmation.
+* The completed delivery becomes part of the client's transaction history.
+
+
+Delivery Person Account (Only one account needed)
+1. Assigned Deliveries
+   1. View client/hospital name.
+   2. View delivery address.
+   3. View scheduled delivery date.
+   4. View ordered products and quantities.
+2. Delivery Status
+   1. Mark order as picked up/preparing for delivery.
+   2. Mark order as out for delivery.
+   3. Mark order as delivered after the client confirms receipt.
+   4. Record unsuccessful delivery when the order cannot be received.
+3. QR Code
+   1. Delivery person provides the QR code for the client to scan.
+   2. Client scans the QR code using the mobile application.
+
+
+                Admin Account (Only one needed)
+1. Client Management
+* Add and manage hospital/client accounts.
+* Store client contact information.
+* Store delivery addresses.
+* View client's order history.
+* View client's outstanding balance.
+* View client's previous transactions.
+2. Product Management (pang update ng goods and prices)
+3. Order Management
+* View incoming orders from clients.
+* Review and confirm orders.
+* Edit or clarify orders
+         * Update order status.
+4. Receipt and records
+* Maexport sana sa excel lahat ng records per client.
+* With sales invoice number
+
+
+
+
+
+
+
+
+Specific details:
+* Hospitals or clients don't usually pay upfront. Usually kinekeep track lang ng accounting dept ng hospital yung nag pipile nila na charges tapos and JF minimart nilalagay sa excel yung orders. They track through receipts then lalagay sa excel.
+   * May 30 days payment sila na requirement na now (pay within 30 days). Before kasi wala sila ganon so anytime lang nag babayad ang clients.
+
+
+SAMPLE EXCEL NILA (WHEN THEY WERE NAMED LDL GROCERY)
+*they recently changed their name for business permit purposes.
+
+
+Copy of Excel: https://docs.google.com/spreadsheets/d/1vCTqAezlhm4oraficUC_67CikdXtxIv3JPvwK7sw930/edit?usp=sharing
+Copy of letter to Accounting dept, stating their balance:
+https://drive.google.com/file/d/1JKLA59YyR-h98p1jg2oGPqmVfDpetLfy/view?usp=sharing
+
+
+
+
+
+
+Inventory:
+* They don't really keep inventory tightly. Mostly just written on paper kasi they buy their meats fresh sa mga stores and suppliers nila. If mag keep sila inventory, only for mga example (Biodegradable 3D cornstarch clamshell (300 pcs per box))
