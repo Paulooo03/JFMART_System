@@ -9,10 +9,10 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 
-import com.jfmart.JFMART.client.*
-import com.jfmart.JFMART.courier.*
-import com.jfmart.JFMART.components.ClientBottomNavigation
-import com.jfmart.JFMART.components.CourierBottomNavigation
+import com.jfmart.JFMART.ui.client.*
+import com.jfmart.JFMART.ui.courier.*
+import com.jfmart.JFMART.ui.components.ClientBottomNavigation
+import com.jfmart.JFMART.ui.components.CourierBottomNavigation
 
 @Composable
 fun AppNavigation() {
