@@ -78,7 +78,7 @@ On DELIVERED: delivered_at recorded, invoice created (due +30 days), shown in cl
 ## 5. Build order
 
 1. ~~Restructure folders~~ (done).
-2. ~~Backend skeleton: Gradle build, Flyway schema, security/JWT, auth + sign‑up/approval~~ (written, not yet run).
-3. ~~Products + orders API~~ (written, not yet run); Android data layer; Client flow.
+2. ~~Backend skeleton: Gradle build, Flyway schema, security/JWT, auth + sign‑up/approval~~ (done, tested by hand).
+3. ~~Products + orders API~~ (done, tested by hand); Android data layer; Client flow.
 4. Delivery + QR API; Courier flow + client QR scanner.
 5. Admin (once its location is decided); billing + Excel export.
