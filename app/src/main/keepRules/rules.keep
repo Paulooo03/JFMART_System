@@ -4,6 +4,10 @@
 # For more details, see
 #   https://d.android.com/r/tools/r8/keep-rules
 
+# Gson reads and writes the API models by reflecting on their field names, so they must not be renamed or removed.
+-keep class com.jfmart.JFMART.data.remote.** { *; }
+-keepattributes Signature, *Annotation*
+
 # If your project uses WebView with JS, uncomment the following
 # and specify the fully qualified class name to the JavaScript interface
 # class:

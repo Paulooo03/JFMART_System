@@ -9,7 +9,7 @@ import androidx.compose.ui.unit.dp
 import com.jfmart.JFMART.ui.components.WireframeListBox
 
 @Composable
-fun CourierProfileScreen() {
+fun CourierProfileScreen(onLogout: () -> Unit) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -34,6 +34,9 @@ fun CourierProfileScreen() {
         Text("(Courier name)", style = MaterialTheme.typography.bodyMedium)
         Text("(Phone number)", style = MaterialTheme.typography.bodyMedium)
         Text("(Email address)", style = MaterialTheme.typography.bodyMedium)
+
+        Spacer(modifier = Modifier.height(16.dp))
+        Button(onClick = onLogout) { Text("Sign out") }
 
         Spacer(modifier = Modifier.height(24.dp))
 

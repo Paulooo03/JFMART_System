@@ -8,7 +8,6 @@ import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavController
-import androidx.navigation.NavGraph.Companion.findStartDestination
 import com.jfmart.JFMART.navigation.Screen
 
 @Composable
@@ -16,6 +15,8 @@ fun CourierBottomNavigation(
     navController: NavController,
     currentRoute: String?
 ) {
+    val root = Screen.CourierDashboard.route
+
     NavigationBar {
         // Home / Dashboard
         NavigationBarItem(
@@ -23,26 +24,14 @@ fun CourierBottomNavigation(
                 Screen.CourierDashboard.route,
                 Screen.CourierDeliveryDetails.route
             ),
-            onClick = {
-                navController.navigate(Screen.CourierDashboard.route) {
-                    popUpTo(navController.graph.findStartDestination().id) { saveState = true }
-                    launchSingleTop = true
-                    restoreState = true
-                }
-            },
+            onClick = { navController.navigateToTab(Screen.CourierDashboard.route, root) },
             icon = { Icon(Icons.Default.Home, contentDescription = "Home") }
         )
 
         // Profile / Account
         NavigationBarItem(
             selected = currentRoute == Screen.CourierProfile.route,
-            onClick = {
-                navController.navigate(Screen.CourierProfile.route) {
-                    popUpTo(navController.graph.findStartDestination().id) { saveState = true }
-                    launchSingleTop = true
-                    restoreState = true
-                }
-            },
+            onClick = { navController.navigateToTab(Screen.CourierProfile.route, root) },
             icon = { Icon(Icons.Default.Person, contentDescription = "Profile") }
         )
     }

@@ -16,6 +16,11 @@ android {
         versionCode = 1
         versionName = "1.0"
 
+        // Backend address. 10.0.2.2 is the PC from inside the Android emulator; for a real phone put
+        // jfmartApiUrl=http://<PC-LAN-IP>:8080/ in gradle.properties (or ~/.gradle/gradle.properties).
+        val apiUrl = providers.gradleProperty("jfmartApiUrl").orElse("http://10.0.2.2:8080/").get()
+        buildConfigField("String", "API_BASE_URL", "\"$apiUrl\"")
+
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
@@ -33,6 +38,7 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
     }
 }
 
@@ -43,6 +49,10 @@ dependencies {
     implementation(libs.androidx.compose.material.icons.core)
     implementation(libs.androidx.compose.material.icons.extended)
     implementation(libs.androidx.navigation.compose)
+    implementation(libs.androidx.lifecycle.viewmodel.compose)
+    implementation(libs.okhttp)
+    implementation(libs.retrofit)
+    implementation(libs.retrofit.converter.gson)
     implementation(libs.androidx.compose.ui)
     implementation(libs.androidx.compose.ui.graphics)
     implementation(libs.androidx.compose.ui.tooling.preview)
