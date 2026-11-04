@@ -22,7 +22,8 @@ fun CourierBottomNavigation(
         NavigationBarItem(
             selected = currentRoute in listOf(
                 Screen.CourierDashboard.route,
-                Screen.CourierDeliveryDetails.route
+                Screen.CourierDeliveryDetails.route,
+                Screen.CourierQr.route
             ),
             onClick = { navController.navigateToTab(Screen.CourierDashboard.route, root) },
             icon = { Icon(Icons.Default.Home, contentDescription = "Home") }

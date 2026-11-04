@@ -132,6 +132,38 @@ data class ClientProfile(
     val department: String?
 )
 
+data class CourierItem(
+    val name: String,
+    val quantity: Int,
+    val unit: String,
+    val instructions: String?
+)
+
+/** A delivery as the courier sees it: where to go and what to bring, without prices. */
+data class CourierDelivery(
+    val id: Long,
+    val orderId: Long,
+    val referenceNumber: String,
+    val clientName: String?,
+    val contactPerson: String?,
+    val phoneNumber: String?,
+    val deliveryLocation: String,
+    val scheduledDate: String,
+    val status: String,
+    val unsuccessfulReason: String?,
+    val deliveredAt: String?,
+    val specialInstructions: String?,
+    val items: List<CourierItem>
+)
+
+data class QrToken(val token: String, val expiresAt: String)
+
+data class UnsuccessfulRequest(val reason: String)
+
+data class ConfirmDeliveryRequest(val token: String)
+
+data class DeliveryConfirmed(val orderId: Long, val referenceNumber: String, val deliveredAt: String)
+
 data class UpdateProfileRequest(
     val contactPerson: String,
     val phoneNumber: String,

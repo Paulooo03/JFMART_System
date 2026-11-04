@@ -36,6 +36,27 @@ interface ApiService {
     @GET("api/statement/mine")
     suspend fun statement(): Statement
 
+    @POST("api/deliveries/confirm")
+    suspend fun confirmDelivery(@Body request: ConfirmDeliveryRequest): DeliveryConfirmed
+
+    @GET("api/courier/deliveries")
+    suspend fun courierDeliveries(): List<CourierDelivery>
+
+    @GET("api/courier/deliveries/{id}")
+    suspend fun courierDelivery(@Path("id") id: Long): CourierDelivery
+
+    @POST("api/courier/deliveries/{id}/preparing")
+    suspend fun courierPreparing(@Path("id") id: Long): CourierDelivery
+
+    @POST("api/courier/deliveries/{id}/out-for-delivery")
+    suspend fun courierOutForDelivery(@Path("id") id: Long): CourierDelivery
+
+    @POST("api/courier/deliveries/{id}/qr")
+    suspend fun courierQr(@Path("id") id: Long): QrToken
+
+    @POST("api/courier/deliveries/{id}/unsuccessful")
+    suspend fun courierUnsuccessful(@Path("id") id: Long, @Body request: UnsuccessfulRequest): CourierDelivery
+
     @GET("api/clients/me")
     suspend fun profile(): ClientProfile
 

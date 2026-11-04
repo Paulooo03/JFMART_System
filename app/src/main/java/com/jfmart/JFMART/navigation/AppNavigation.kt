@@ -31,6 +31,7 @@ import com.jfmart.JFMART.ui.components.navigateToTab
 import com.jfmart.JFMART.ui.courier.CourierDashboardScreen
 import com.jfmart.JFMART.ui.courier.CourierDeliveryDetailsScreen
 import com.jfmart.JFMART.ui.courier.CourierProfileScreen
+import com.jfmart.JFMART.ui.courier.CourierQrScreen
 
 /** Where a signed-in user starts; null means signed out. */
 private fun homeRouteFor(session: Session?): String? = when (session?.role) {
@@ -54,6 +55,7 @@ private val clientTabRoutes = listOf(
 private val courierTabRoutes = listOf(
     Screen.CourierDashboard.route,
     Screen.CourierDeliveryDetails.route,
+    Screen.CourierQr.route,
     Screen.CourierProfile.route
 )
 
@@ -164,16 +166,37 @@ fun AppNavigation() {
                 StatementScreen(onBack = { navController.popBackStack() })
             }
 
-            // Courier (still wireframes; replaced in the next stage)
+            // Courier
             composable(Screen.CourierDashboard.route) {
                 CourierDashboardScreen(
-                    onViewPending = { navController.navigate(Screen.CourierDeliveryDetails.route) },
-                    onViewDelivered = { navController.navigate(Screen.CourierDeliveryDetails.route) }
+                    onOpenDelivery = { navController.navigate(Screen.CourierDeliveryDetails.create(it)) }
                 )
             }
-            composable(Screen.CourierDeliveryDetails.route) { CourierDeliveryDetailsScreen() }
+            composable(
+                Screen.CourierDeliveryDetails.route,
+                arguments = listOf(navArgument("deliveryId") { type = NavType.LongType })
+            ) { entry ->
+                val deliveryId = entry.arguments?.getLong("deliveryId") ?: 0L
+                CourierDeliveryDetailsScreen(
+                    deliveryId = deliveryId,
+                    onBack = { navController.popBackStack() },
+                    onShowQr = { navController.navigate(Screen.CourierQr.create(deliveryId)) }
+                )
+            }
+            composable(
+                Screen.CourierQr.route,
+                arguments = listOf(navArgument("deliveryId") { type = NavType.LongType })
+            ) { entry ->
+                CourierQrScreen(
+                    deliveryId = entry.arguments?.getLong("deliveryId") ?: 0L,
+                    onDone = { navController.popBackStack() }
+                )
+            }
             composable(Screen.CourierProfile.route) {
-                CourierProfileScreen(onLogout = { authViewModel.logout() })
+                CourierProfileScreen(
+                    onOpenDelivery = { navController.navigate(Screen.CourierDeliveryDetails.create(it)) },
+                    onLogout = { authViewModel.logout() }
+                )
             }
 
             // Admin

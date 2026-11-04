@@ -50,6 +50,9 @@ dependencies {
     implementation(libs.androidx.compose.material.icons.extended)
     implementation(libs.androidx.navigation.compose)
     implementation(libs.androidx.lifecycle.viewmodel.compose)
+    // QR codes: zxing-core draws the courier's code, zxing-embedded is the client's camera scanner
+    implementation(libs.zxing.core)
+    implementation(libs.zxing.embedded)
     implementation(libs.okhttp)
     implementation(libs.retrofit)
     implementation(libs.retrofit.converter.gson)

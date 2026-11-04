@@ -17,7 +17,11 @@ import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.jfmart.JFMART.AppGraph
 import com.jfmart.JFMART.data.remote.ApiResult
+import androidx.activity.compose.rememberLauncherForActivityResult
 import com.jfmart.JFMART.data.remote.CancelRequest
+import com.jfmart.JFMART.data.remote.ConfirmDeliveryRequest
+import com.journeyapps.barcodescanner.ScanContract
+import com.journeyapps.barcodescanner.ScanOptions
 import com.jfmart.JFMART.data.remote.DeliveryInfo
 import com.jfmart.JFMART.data.remote.Order
 import com.jfmart.JFMART.data.remote.apiCall
@@ -33,6 +37,32 @@ class OrderDetailViewModel : ViewModel() {
         private set
     var actionError by mutableStateOf<String?>(null)
         private set
+    var confirming by mutableStateOf(false)
+        private set
+    var confirmError by mutableStateOf<String?>(null)
+        private set
+    var deliveryConfirmed by mutableStateOf(false)
+        private set
+
+    /** Sends the code scanned from (or typed in for) the courier's QR; on success the order becomes Delivered. */
+    fun confirmDelivery(orderId: Long, token: String) {
+        viewModelScope.launch {
+            confirming = true
+            confirmError = null
+            when (val result = apiCall { AppGraph.api.confirmDelivery(ConfirmDeliveryRequest(token.trim())) }) {
+                is ApiResult.Ok -> {
+                    deliveryConfirmed = true
+                    load(orderId)
+                }
+                is ApiResult.Err -> confirmError = result.message
+            }
+            confirming = false
+        }
+    }
+
+    fun dismissConfirmed() {
+        deliveryConfirmed = false
+    }
 
     fun load(orderId: Long) {
         viewModelScope.launch {
@@ -67,7 +97,23 @@ private val timeline = listOf("PENDING", "CONFIRMED", "PREPARING", "OUT_FOR_DELI
 @Composable
 fun OrderDetailsScreen(orderId: Long, onBack: () -> Unit, viewModel: OrderDetailViewModel = viewModel()) {
     var confirmCancel by rememberSaveable { mutableStateOf(false) }
+    var typeCode by rememberSaveable { mutableStateOf(false) }
     LaunchedEffect(orderId) { viewModel.load(orderId) }
+
+    // The scanner screen asks for the camera permission itself and returns the QR text
+    val scanLauncher = rememberLauncherForActivityResult(ScanContract()) { result ->
+        result.contents?.let { viewModel.confirmDelivery(orderId, it) }
+    }
+    val startScan = {
+        scanLauncher.launch(
+            ScanOptions().apply {
+                setDesiredBarcodeFormats(ScanOptions.QR_CODE)
+                setPrompt("Scan the courier's QR code")
+                setBeepEnabled(false)
+                setOrientationLocked(false)
+            }
+        )
+    }
 
     Column(Modifier.fillMaxSize().padding(16.dp)) {
         ScreenHeader("Order details", onBack = onBack)
@@ -103,7 +149,14 @@ fun OrderDetailsScreen(orderId: Long, onBack: () -> Unit, viewModel: OrderDetail
                 Text("Ordered ${displayDateTime(order.createdAt)}", style = MaterialTheme.typography.bodySmall)
                 order.deliveredAt?.let { Text("Delivered ${displayDateTime(it)}", style = MaterialTheme.typography.bodySmall) }
 
-                DeliverySection(order, detail.deliveries)
+                DeliverySection(
+                    order = order,
+                    deliveries = detail.deliveries,
+                    confirming = viewModel.confirming,
+                    confirmError = viewModel.confirmError,
+                    onScan = { startScan() },
+                    onTypeCode = { typeCode = true }
+                )
 
                 viewModel.actionError?.let { Text(it, color = MaterialTheme.colorScheme.error) }
                 if (order.status == "PENDING") {
@@ -115,6 +168,25 @@ fun OrderDetailsScreen(orderId: Long, onBack: () -> Unit, viewModel: OrderDetail
                 }
             }
         }
+    }
+
+    if (typeCode) {
+        TypeCodeDialog(
+            onDismiss = { typeCode = false },
+            onConfirm = { code ->
+                typeCode = false
+                viewModel.confirmDelivery(orderId, code)
+            }
+        )
+    }
+
+    if (viewModel.deliveryConfirmed) {
+        AlertDialog(
+            onDismissRequest = { viewModel.dismissConfirmed() },
+            title = { Text("Delivery confirmed") },
+            text = { Text("Thank you. Your order is now marked as delivered.") },
+            confirmButton = { TextButton(onClick = { viewModel.dismissConfirmed() }) { Text("OK") } }
+        )
     }
 
     if (confirmCancel) {
@@ -162,7 +234,33 @@ private fun StatusTimeline(order: Order) {
 }
 
 @Composable
-private fun DeliverySection(order: Order, deliveries: List<DeliveryInfo>) {
+private fun TypeCodeDialog(onDismiss: () -> Unit, onConfirm: (String) -> Unit) {
+    var code by rememberSaveable { mutableStateOf("") }
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text("Type the delivery code") },
+        text = {
+            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                Text("Ask the courier for the code shown under the QR code.")
+                FormField("Delivery code", code, { code = it })
+            }
+        },
+        confirmButton = {
+            TextButton(onClick = { onConfirm(code) }, enabled = code.isNotBlank()) { Text("Confirm delivery") }
+        },
+        dismissButton = { TextButton(onClick = onDismiss) { Text("Cancel") } }
+    )
+}
+
+@Composable
+private fun DeliverySection(
+    order: Order,
+    deliveries: List<DeliveryInfo>,
+    confirming: Boolean,
+    confirmError: String?,
+    onScan: () -> Unit,
+    onTypeCode: () -> Unit
+) {
     val latest = deliveries.firstOrNull() ?: return
     OutlinedCard(Modifier.fillMaxWidth()) {
         Column(Modifier.padding(12.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
@@ -180,6 +278,11 @@ private fun DeliverySection(order: Order, deliveries: List<DeliveryInfo>) {
                     "Your order is on its way. When it arrives, scan the courier's QR code to confirm you received it.",
                     style = MaterialTheme.typography.bodyMedium
                 )
+                confirmError?.let { Text(it, color = MaterialTheme.colorScheme.error) }
+                Button(onClick = onScan, enabled = !confirming, modifier = Modifier.fillMaxWidth()) {
+                    Text(if (confirming) "Confirming..." else "Scan QR code to confirm receipt")
+                }
+                TextButton(onClick = onTypeCode, enabled = !confirming) { Text("Type the code instead") }
             }
         }
     }

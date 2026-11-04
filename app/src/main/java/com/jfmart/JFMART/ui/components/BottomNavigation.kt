@@ -7,12 +7,14 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.NavController
 import com.jfmart.JFMART.navigation.Screen
 
-/** Switches tab while keeping each tab's own back stack. [root] is the tab the user landed on after signing in. */
+/**
+ * Switches tab and always lands on that tab's first screen, even when one of its detail screens is open.
+ * [root] is the tab the user landed on after signing in.
+ */
 fun NavController.navigateToTab(route: String, root: String) {
     navigate(route) {
-        popUpTo(root) { saveState = true }
+        popUpTo(root)
         launchSingleTop = true
-        restoreState = true
     }
 }
 
