@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product List - JFMART Admin</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="wireframe-bg">
+    <div class="board-container">
+        <div class="top-nav">
+            <a href="dashboard.html" class="btn btn-gray">Back</a>
+        </div>
+
+        <h2 class="page-title">Product list</h2>
+
+        <div class="content-panel">
+            <div class="panel-header-actions">
+                <p class="panel-instruction">Display list of products and quantity</p>
+                <button id="add-product-btn" class="btn btn-primary">+ Add Product</button>
+            </div>
+
+            <table class="data-table" id="products-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Product Name</th>
+                        <th>Unit Price</th>
+                        <th>Available Stock</th>
+                        <th>Preferred Unit</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="products-list-body">
+                    <!-- Dynamic product rows loaded via JS -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <script src="js/api.js"></script>
+    <script src="js/products.js"></script>
+</body>
+</html>

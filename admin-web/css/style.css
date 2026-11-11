@@ -1,0 +1,357 @@
+/* ==========================================================================
+   Global Reset & Color Palette (Dark Slate & Sky Blue Theme)
+   ========================================================================== */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+:root {
+    --bg-canvas: #0B1318;          /* Deep dark slate background */
+    --board-bg: #121C22;           /* Card & board background */
+    --panel-bg: #1A262F;           /* Inner content panels */
+    --accent-blue: #80C4F6;        /* Light sky blue primary accent */
+    --accent-blue-hover: #67B5F3;  /* Darker blue hover */
+    --text-primary: #FFFFFF;       /* Primary text */
+    --text-secondary: #94A3B8;     /* Muted secondary text & placeholders */
+    --border-color: #263540;       /* Border & outline color */
+    --input-bg: #0B1318;          /* Input field background */
+    --danger-red: #F87171;         /* Error text & badges */
+    --success-green: #34D399;      /* Success badges */
+    --warning-yellow: #FBBF24;     /* Warning badges */
+}
+
+/* Base Body Styling */
+body.wireframe-bg {
+    background-color: var(--bg-canvas);
+    color: var(--text-primary);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 20px;
+}
+
+/* Board Outer Wrapper */
+.board-container {
+    background-color: var(--board-bg);
+    width: 100%;
+    max-width: 960px;
+    min-height: 600px;
+    position: relative;
+    padding: 40px;
+    border-radius: 16px;
+    border: 1px solid var(--border-color);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+    display: flex;
+    flex-direction: column;
+}
+
+.board-container.center-content {
+    justify-content: center;
+    align-items: center;
+}
+
+/* Navigation & Titles */
+.top-nav {
+    position: absolute;
+    top: 30px;
+    left: 30px;
+}
+
+.page-title {
+    text-align: center;
+    font-size: 24px;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 24px;
+    letter-spacing: 0.5px;
+}
+
+/* ==========================================================================
+   Button Components
+   ========================================================================== */
+.btn {
+    display: inline-block;
+    padding: 12px 24px;
+    font-size: 15px;
+    font-weight: 600;
+    text-align: center;
+    text-decoration: none;
+    border: 1px solid transparent;
+    border-radius: 50px; /* Pill shape matching screenshot */
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+}
+
+.btn-gray {
+    background-color: var(--accent-blue);
+    color: var(--bg-canvas);
+}
+
+.btn-gray:hover {
+    background-color: var(--accent-blue-hover);
+    transform: translateY(-1px);
+}
+
+.btn-outline {
+    background-color: transparent;
+    border-color: var(--border-color);
+    color: var(--text-primary);
+}
+
+.btn-outline:hover {
+    border-color: var(--text-secondary);
+    background-color: rgba(255, 255, 255, 0.05);
+}
+
+.btn-primary {
+    background-color: var(--accent-blue);
+    color: var(--bg-canvas);
+}
+
+.btn-primary:hover {
+    background-color: var(--accent-blue-hover);
+}
+
+/* Error Messages */
+.error-message {
+    color: var(--danger-red);
+    font-size: 13px;
+    margin-top: 14px;
+    text-align: center;
+}
+
+/* ==========================================================================
+   1. Admin Login Screen (index.html)
+   ========================================================================== */
+.login-card {
+    width: 100%;
+    max-width: 380px;
+    text-align: center;
+}
+
+.login-card h2 {
+    font-size: 28px;
+    font-weight: 500;
+    color: var(--text-primary);
+    margin-bottom: 32px;
+}
+
+.form-group {
+    margin-bottom: 24px;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 14px 18px;
+    background-color: var(--input-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    font-size: 15px;
+    color: var(--text-primary);
+    text-align: left;
+    outline: none;
+    transition: border-color 0.2s ease;
+}
+
+.form-group input:focus {
+    border-color: var(--accent-blue);
+}
+
+.form-group input::placeholder {
+    color: var(--text-secondary);
+}
+
+.login-card .btn {
+    width: 160px;
+    padding: 12px;
+    margin-top: 8px;
+}
+
+/* ==========================================================================
+   2. Dashboard View (dashboard.html)
+   ========================================================================== */
+.dashboard-layout {
+    display: flex;
+    gap: 24px;
+    flex: 1;
+    align-items: stretch;
+    margin-bottom: 20px;
+}
+
+.forecast-panel {
+    flex: 3;
+    background-color: var(--panel-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    min-height: 360px;
+}
+
+.panel-caption {
+    margin-top: 16px;
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--text-secondary);
+}
+
+.nav-grid {
+    flex: 1.2;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr 1fr;
+    gap: 16px;
+}
+
+.nav-btn {
+    background-color: var(--panel-bg);
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-decoration: none;
+    font-size: 15px;
+    font-weight: 500;
+    border-radius: 12px;
+    transition: all 0.2s ease;
+}
+
+.nav-btn:hover {
+    border-color: var(--accent-blue);
+    color: var(--accent-blue);
+    background-color: rgba(128, 196, 246, 0.05);
+}
+
+.dashboard-footer {
+    display: flex;
+    justify-content: flex-end;
+}
+
+/* ==========================================================================
+   3. Content Panels & Tables (clients.html, products.html, orders.html)
+   ========================================================================== */
+.content-panel {
+    background-color: var(--panel-bg);
+    border: 1px solid var(--border-color);
+    flex: 1;
+    border-radius: 12px;
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+}
+
+.panel-header-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+}
+
+.panel-instruction {
+    font-size: 14px;
+    font-weight: 400;
+    color: var(--text-secondary);
+}
+
+/* Functional Data Tables */
+.data-table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: var(--board-bg);
+    border-radius: 8px;
+    overflow: hidden;
+    margin-top: 12px;
+    font-size: 14px;
+    border: 1px solid var(--border-color);
+}
+
+.data-table th, 
+.data-table td {
+    padding: 14px 16px;
+    text-align: left;
+    border-bottom: 1px solid var(--border-color);
+    color: var(--text-primary);
+}
+
+.data-table th {
+    background-color: var(--input-bg);
+    color: var(--text-secondary);
+    font-weight: 600;
+}
+
+.data-table tbody tr:hover {
+    background-color: rgba(255, 255, 255, 0.02);
+}
+
+/* Status Badges */
+.badge {
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.badge-warning {
+    background-color: rgba(251, 191, 36, 0.15);
+    color: var(--warning-yellow);
+}
+
+.badge-danger {
+    background-color: rgba(248, 113, 113, 0.15);
+    color: var(--danger-red);
+}
+
+.badge-success {
+    background-color: rgba(52, 211, 153, 0.15);
+    color: var(--success-green);
+}
+
+/* ==========================================================================
+   4. Records View (records.html)
+   ========================================================================== */
+.records-dual-panel {
+    display: flex;
+    gap: 24px;
+    flex: 1;
+    margin-bottom: 10px;
+}
+
+.record-box {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.record-box h3 {
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--text-secondary);
+    margin-bottom: 12px;
+}
+
+.record-scroll-view {
+    background-color: var(--panel-bg);
+    border: 1px solid var(--border-color);
+    width: 100%;
+    flex: 1;
+    min-height: 320px;
+    border-radius: 12px;
+    padding: 16px;
+    overflow-y: auto;
+    color: var(--text-primary);
+}
+
+.export-btn {
+    margin-top: 16px;
+    width: 130px;
+}

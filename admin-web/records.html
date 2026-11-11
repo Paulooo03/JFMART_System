@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Records - JFMART Admin</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="wireframe-bg">
+    <div class="board-container">
+        <div class="top-nav">
+            <a href="dashboard.html" class="btn btn-gray">Back</a>
+        </div>
+
+        <h2 class="page-title">Records</h2>
+
+        <div class="records-dual-panel">
+            <!-- Panel 1: Order History -->
+            <div class="record-box">
+                <h3>Display order history</h3>
+                <div class="record-scroll-view" id="order-history-view">
+                    <!-- History entries rendered here -->
+                </div>
+                <button id="export-orders-btn" class="btn btn-gray export-btn">Export</button>
+            </div>
+
+            <!-- Panel 2: Client Transactions -->
+            <div class="record-box">
+                <h3>Display client transactions</h3>
+                <div class="record-scroll-view" id="client-transactions-view">
+                    <!-- Invoice and transaction entries rendered here -->
+                </div>
+                <button id="export-transactions-btn" class="btn btn-gray export-btn">Export</button>
+            </div>
+        </div>
+    </div>
+    <script src="js/api.js"></script>
+    <script src="js/records.js"></script>
+</body>
+</html>

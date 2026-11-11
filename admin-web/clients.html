@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Client List - JFMART Admin</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="wireframe-bg">
+    <div class="board-container">
+        <div class="top-nav">
+            <a href="dashboard.html" class="btn btn-gray">Back</a>
+        </div>
+        
+        <h2 class="page-title">Client list</h2>
+
+        <div class="content-panel">
+            <div class="panel-header-actions">
+                <p class="panel-instruction">Display client list, client details, and payment deadline</p>
+                <button id="add-client-btn" class="btn btn-primary">+ Add New Client</button>
+            </div>
+            
+            <table class="data-table" id="clients-table">
+                <thead>
+                    <tr>
+                        <th>Client / Hospital Name</th>
+                        <th>Contact Info</th>
+                        <th>Delivery Address</th>
+                        <th>Outstanding Balance</th>
+                        <th>30-Day Payment Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="clients-list-body">
+                    <!-- Dynamic client data loaded via JS -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <script src="js/api.js"></script>
+    <script src="js/clients.js"></script>
+</body>
+</html>

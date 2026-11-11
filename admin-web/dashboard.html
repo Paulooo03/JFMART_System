@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - JFMART Admin</title>
+    <link rel="stylesheet" href="css/style.css">
+    <!-- Chart.js for AI Demand Forecast rendering -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body class="wireframe-bg">
+    <div class="board-container">
+        <h2 class="page-title">Dashboard</h2>
+        
+        <div class="dashboard-layout">
+            <!-- Central Chart Display -->
+            <div class="forecast-panel">
+                <canvas id="forecastChart"></canvas>
+                <p class="panel-caption">Product-Demand Forecast</p>
+            </div>
+
+            <!-- Navigation Buttons -->
+            <div class="nav-grid">
+                <a href="clients.html" class="nav-btn">Clients</a>
+                <a href="products.html" class="nav-btn">Products</a>
+                <a href="orders.html" class="nav-btn">Orders</a>
+                <a href="records.html" class="nav-btn">Records</a>
+            </div>
+        </div>
+
+        <div class="dashboard-footer">
+            <button id="logout-btn" class="btn btn-gray">Logout</button>
+        </div>
+    </div>
+    <script src="js/api.js"></script>
+    <script src="js/dashboard.js"></script>
+</body>
+</html>
