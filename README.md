@@ -24,6 +24,12 @@ git clone https://github.com/Paulooo03/JFMART_System.git
 cd JFMART_System
 ```
 
+The admin website is on the branch `admin-web` until it is merged into `main`. If it is not in `main` yet, switch to it:
+
+```powershell
+git checkout admin-web
+```
+
 Open the **project root** in Android Studio. It builds the app. Wait for the Gradle sync to finish.
 
 The server is a separate Gradle build in `backend/`. You run it from a terminal, so you do not need to open it in the IDE.
@@ -103,6 +109,19 @@ Start the server (step 3), then open <http://localhost:8080> in a browser. Sign 
 | Invoices & payments | Enter the sales invoice number, record payments, filter by client, status or overdue |
 | Records | Pick a client to see their order history, invoices and payments, and download everything as an Excel file |
 
+### Check that the admin site works
+
+With the server running and an emulator set up (step 4), go through this once:
+
+1. Sign in at <http://localhost:8080> with a wrong password (you should get an error), then with the right one.
+2. **Clients:** add a client from the site. Then sign up another client in the app and approve it on the site.
+3. **Products:** add a product and change its price. It shows in the app's catalog after a refresh.
+4. As an approved client, order something and request an unlisted item. On **Orders**, open the order, price the requested item and confirm it.
+5. Schedule the delivery (**Orders** or **Deliveries**). Sign in as `courier` in the app and finish the delivery with the QR code.
+6. **Invoices:** set the sales invoice number and record a payment. A payment above the balance should be refused.
+7. **Records:** pick the client and download the Excel file.
+8. Sign up a client named `<b>test</b>`. The site must show it exactly as typed, not in bold.
+
 Notes:
 - The admin site only talks to the server's `/api` addresses, and the login token is kept for the browser tab only.
 - Text that clients type (hospital names, item names, notes) is always shown as plain text.
@@ -113,6 +132,8 @@ Notes:
 | Problem | Fix |
 |---|---|
 | Admin site shows no data or sends you back to the login page | The token expired (it lasts 12 hours) or the server was restarted. Sign in again. If pages look old after you edited `admin-web/`, restart the server and press Ctrl+F5. |
+| Admin login says the password is wrong | The admin account was created on your first start and later changes to `ADMIN_PASSWORD` are ignored. To reset it on your own machine: in the MySQL prompt run `USE jf_mart_db; DELETE FROM users WHERE role = 'ROLE_ADMIN';`, then start the server with the new `ADMIN_PASSWORD` and it creates the account again. Do the same with `ROLE_DELIVERY` for the courier. |
+| Admin site looks unstyled or cramped after pulling changes | Restart the server, then press Ctrl+F5 in the browser. |
 | App says "Can't reach the server" | Is the server running? Run the `adb reverse` command again. Check `jfmartApiUrl`. In Logcat, search `JFMartApi` for the exact cause. |
 | `bootRun` says "JAVA_HOME is not set" | Set `$env:JAVA_HOME` in the same window. |
 | `Task 'bootRun' not found` | You are in the project root. Run `cd backend` first. |
