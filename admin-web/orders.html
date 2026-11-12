@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pending Orders - JFMART Admin</title>
+    <title>Orders - JFMART Admin</title>
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body class="wireframe-bg">
@@ -12,29 +12,32 @@
             <a href="dashboard.html" class="btn btn-gray">Back</a>
         </div>
 
-        <h2 class="page-title">Pending Orders</h2>
+        <h2 class="page-title">Orders</h2>
+        <div id="page-error" class="error-message"></div>
 
         <div class="content-panel">
-            <p class="panel-instruction">Display orders, order details, and order status</p>
-            
-            <table class="data-table" id="orders-table">
-                <thead>
-                    <tr>
-                        <th>Order #</th>
-                        <th>Client Name</th>
-                        <th>Order Items & Custom Requests</th>
-                        <th>Total Estimated Cost</th>
-                        <th>Current Status</th>
-                        <th>Update Status / Action</th>
-                    </tr>
-                </thead>
-                <tbody id="orders-list-body">
-                    <!-- Dynamic order rows loaded via JS -->
-                </tbody>
-            </table>
+            <p class="panel-instruction">Review incoming orders, price requested items, confirm, and schedule deliveries.</p>
+            <div id="status-tabs" class="tabs"></div>
+
+            <div class="table-wrap">
+                <table class="data-table" id="orders-table">
+                    <thead>
+                        <tr>
+                            <th>Order #</th>
+                            <th>Client Name</th>
+                            <th>Order Items &amp; Notes</th>
+                            <th class="num">Total</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="orders-list-body"></tbody>
+                </table>
+            </div>
         </div>
     </div>
     <script src="js/api.js"></script>
+    <script src="js/ui.js"></script>
     <script src="js/orders.js"></script>
 </body>
 </html>

@@ -13,31 +13,36 @@
         </div>
 
         <h2 class="page-title">Product list</h2>
+        <div id="page-error" class="error-message"></div>
 
         <div class="content-panel">
             <div class="panel-header-actions">
-                <p class="panel-instruction">Display list of products and quantity</p>
+                <p class="panel-instruction">Products and the prices clients see. Inactive products are hidden from clients.</p>
                 <button id="add-product-btn" class="btn btn-primary">+ Add Product</button>
             </div>
+            <div class="toolbar">
+                <input id="product-search" class="input compact" type="search" placeholder="Search products">
+                <label class="check"><input id="show-inactive" type="checkbox" checked> Show inactive</label>
+            </div>
 
-            <table class="data-table" id="products-table">
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Product Name</th>
-                        <th>Unit Price</th>
-                        <th>Available Stock</th>
-                        <th>Preferred Unit</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody id="products-list-body">
-                    <!-- Dynamic product rows loaded via JS -->
-                </tbody>
-            </table>
+            <div class="table-wrap">
+                <table class="data-table" id="products-table">
+                    <thead>
+                        <tr>
+                            <th>Product Name</th>
+                            <th class="num">Unit Price</th>
+                            <th>Preferred Unit</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="products-list-body"></tbody>
+                </table>
+            </div>
         </div>
     </div>
     <script src="js/api.js"></script>
+    <script src="js/ui.js"></script>
     <script src="js/products.js"></script>
 </body>
 </html>

@@ -5,17 +5,21 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard - JFMART Admin</title>
     <link rel="stylesheet" href="css/style.css">
-    <!-- Chart.js for AI Demand Forecast rendering -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body class="wireframe-bg">
     <div class="board-container">
         <h2 class="page-title">Dashboard</h2>
-        
+
+        <div id="page-error" class="error-message"></div>
+        <div id="summary" class="cards"></div>
+
         <div class="dashboard-layout">
-            <!-- Central Chart Display -->
+            <!-- Placeholder for the planned product-demand forecast -->
             <div class="forecast-panel">
-                <canvas id="forecastChart"></canvas>
+                <div class="empty-state">
+                    <p class="big">No forecast data available</p>
+                    <p class="muted">Prediction logs will appear here once generated.</p>
+                </div>
                 <p class="panel-caption">Product-Demand Forecast</p>
             </div>
 
@@ -24,6 +28,8 @@
                 <a href="clients.html" class="nav-btn">Clients</a>
                 <a href="products.html" class="nav-btn">Products</a>
                 <a href="orders.html" class="nav-btn">Orders</a>
+                <a href="deliveries.html" class="nav-btn">Deliveries</a>
+                <a href="invoices.html" class="nav-btn">Invoices &amp; payments</a>
                 <a href="records.html" class="nav-btn">Records</a>
             </div>
         </div>
@@ -33,6 +39,7 @@
         </div>
     </div>
     <script src="js/api.js"></script>
+    <script src="js/ui.js"></script>
     <script src="js/dashboard.js"></script>
 </body>
 </html>

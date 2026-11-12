@@ -1,25 +1,28 @@
-document.addEventListener("DOMContentLoaded", () => {
-    const logoutBtn = document.getElementById("logout-btn");
-    if (logoutBtn) logoutBtn.addEventListener("click", logout);
+"use strict";
 
-    displayEmptyForecast();
+document.addEventListener("DOMContentLoaded", async () => {
+    if (!JF.requireLogin()) return;
+    document.getElementById("logout-btn").addEventListener("click", JF.logout);
+
+    const summaryBox = document.getElementById("summary");
+    const errorBox = document.getElementById("page-error");
+    const { h, money } = UI;
+
+    function card(href, value, label, alert) {
+        return h("a", { class: "card-stat" + (alert ? " alert" : ""), href }, h("div", { class: "value", text: value }), h("div", { class: "label", text: label }));
+    }
+
+    try {
+        const s = await JF.api.get("/admin/dashboard");
+        summaryBox.append(
+            card("clients.html", s.pendingApprovals, "Clients waiting for approval", s.pendingApprovals > 0),
+            card("orders.html?status=PENDING", s.pendingOrders, "New orders to review", s.pendingOrders > 0),
+            card("orders.html?status=CONFIRMED", s.awaitingDelivery, "Confirmed, need a delivery date", s.awaitingDelivery > 0),
+            card("deliveries.html", s.deliveriesToday, "Deliveries scheduled today", false),
+            card("invoices.html?overdue=true", money(s.overdueBalance), "Overdue (" + s.overdueClients + " client" + (s.overdueClients === 1 ? "" : "s") + ")", s.overdueClients > 0),
+            card("invoices.html", money(s.totalOutstanding), "Total outstanding", false)
+        );
+    } catch (error) {
+        UI.showError(errorBox, error);
+    }
 });
-
-function displayEmptyForecast() {
-    const forecastPanel = document.querySelector(".forecast-panel");
-    if (!forecastPanel) return;
-
-    // Display empty state layout matching dark theme
-    forecastPanel.innerHTML = `
-        <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; min-height: 280px; text-align: center;">
-            <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="#94A3B8" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="margin-bottom: 12px; opacity: 0.5;">
-                <line x1="18" y1="20" x2="18" y2="10"></line>
-                <line x1="12" y1="20" x2="12" y2="4"></line>
-                <line x1="6" y1="20" x2="6" y2="14"></line>
-            </svg>
-            <p style="font-size: 16px; font-weight: 500; color: #94A3B8; margin-bottom: 4px;">No Forecast Data Available</p>
-            <p style="font-size: 13px; color: #64748B;">Prediction logs will appear here once generated.</p>
-        </div>
-        <p class="panel-caption">Product-Demand Forecast</p>
-    `;
-}

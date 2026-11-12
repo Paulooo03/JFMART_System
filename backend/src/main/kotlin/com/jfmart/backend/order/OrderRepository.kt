@@ -7,4 +7,5 @@ interface OrderRepository : JpaRepository<Order, Long> {
     fun findByClientIdOrderByCreatedAtDesc(clientId: Long): List<Order>
     fun findByStatusOrderByCreatedAtDesc(status: OrderStatus): List<Order>
     fun findAllByOrderByCreatedAtDesc(): List<Order>
+    fun countByStatus(status: OrderStatus): Long
 }

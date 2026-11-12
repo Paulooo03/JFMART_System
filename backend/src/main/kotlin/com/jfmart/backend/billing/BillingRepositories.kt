@@ -12,6 +12,12 @@ interface ClientAmount {
     val total: BigDecimal
 }
 
+/** A per-invoice total from a grouped query. */
+interface InvoiceAmount {
+    val invoiceId: Long
+    val total: BigDecimal
+}
+
 interface InvoiceRepository : JpaRepository<Invoice, Long> {
     fun findAllByOrderByStartDateDescInvoiceNumberDesc(): List<Invoice>
     fun findByClientIdOrderByStartDateDescInvoiceNumberDesc(clientId: Long): List<Invoice>
@@ -32,4 +38,7 @@ interface PaymentRepository : JpaRepository<Payment, Long> {
 
     @Query("select p.clientId as clientId, sum(p.amountPaid) as total from Payment p group by p.clientId")
     fun totalsByClient(): List<ClientAmount>
+
+    @Query("select p.invoiceId as invoiceId, sum(p.amountPaid) as total from Payment p group by p.invoiceId")
+    fun totalsByInvoice(): List<InvoiceAmount>
 }

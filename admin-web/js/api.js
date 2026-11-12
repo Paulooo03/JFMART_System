@@ -1,78 +1,131 @@
-const API_BASE_URL = "http://localhost:8080/api";
+"use strict";
 
 /**
- * Universal wrapper for API calls with JWT header injection
+ * Talks to the JF MiniMart server. The pages are served by the same server, so every call goes to a
+ * relative /api address and no cross-origin settings are needed.
+ * The login token lives in sessionStorage: it disappears when the tab is closed.
  */
-async function fetchWithAuth(endpoint, options = {}) {
-    const token = localStorage.getItem("jwt_token");
+(function (global) {
+    const TOKEN_KEY = "jfmart_admin_token";
 
-    // Redirect to login if token is missing (except on login page)
-    if (!token && !window.location.pathname.endsWith("index.html") && window.location.pathname !== "/admin-web/") {
-        window.location.href = "index.html";
-        return null;
-    }
-
-    const headers = {
-        "Content-Type": "application/json",
-        ...(token && { "Authorization": `Bearer ${token}` }),
-        ...options.headers
+    const session = {
+        get token() {
+            try {
+                return sessionStorage.getItem(TOKEN_KEY);
+            } catch (e) {
+                return null;
+            }
+        },
+        set(token) {
+            sessionStorage.setItem(TOKEN_KEY, token);
+        },
+        clear() {
+            try {
+                sessionStorage.removeItem(TOKEN_KEY);
+            } catch (e) {
+                /* storage unavailable: nothing to clear */
+            }
+        },
     };
 
-    try {
-        const response = await fetch(`${API_BASE_URL}${endpoint}`, {
-            ...options,
-            headers
-        });
+    class ApiError extends Error {
+        constructor(message, status) {
+            super(message);
+            this.status = status;
+        }
+    }
 
-        // Handle unauthorized or expired session
-        if (response.status === 401 || response.status === 403) {
-            localStorage.removeItem("jwt_token");
-            window.location.href = "index.html";
-            return null;
+    function goToLogin() {
+        window.location.href = "index.html";
+    }
+
+    /** Signed out, or the token expired: go back to the login page. */
+    function endSession() {
+        session.clear();
+        goToLogin();
+        return new ApiError("Your session has expired. Please sign in again.", 401);
+    }
+
+    async function request(path, options = {}) {
+        const headers = { Accept: "application/json" };
+        const hasBody = options.body !== undefined;
+        if (hasBody) headers["Content-Type"] = "application/json";
+        const token = session.token;
+        if (token) headers.Authorization = "Bearer " + token;
+
+        let response;
+        try {
+            response = await fetch("/api" + path, {
+                method: options.method || "GET",
+                headers,
+                body: hasBody ? JSON.stringify(options.body) : undefined,
+            });
+        } catch (e) {
+            throw new ApiError("Cannot reach the server. Is it running?", 0);
         }
 
+        if (response.status === 401 && token) throw endSession();
+
+        const text = await response.text();
+        let data = null;
+        if (text) {
+            try {
+                data = JSON.parse(text);
+            } catch (e) {
+                data = null;
+            }
+        }
         if (!response.ok) {
-            const errorData = await response.json().catch(() => ({}));
-            throw new Error(errorData.message || `HTTP error! Status: ${response.status}`);
+            throw new ApiError((data && data.message) || "Request failed (" + response.status + ")", response.status);
         }
-
-        return await response.json();
-    } catch (error) {
-        console.error("API Call Error:", error);
-        throw error;
+        return data;
     }
-}
 
-/**
- * Blob downloader helper for Excel exports (FR-11)
- */
-async function downloadExcelFile(endpoint, filename) {
-    const token = localStorage.getItem("jwt_token");
-    try {
-        const response = await fetch(`${API_BASE_URL}${endpoint}`, {
-            headers: { "Authorization": `Bearer ${token}` }
-        });
+    const api = {
+        get: (path) => request(path),
+        post: (path, body) => request(path, { method: "POST", body }),
+        put: (path, body) => request(path, { method: "PUT", body }),
+        del: (path) => request(path, { method: "DELETE" }),
+    };
 
-        if (!response.ok) throw new Error("Export download failed.");
+    /** Downloads a file (such as the Excel export) with the login token attached. */
+    async function download(path, fallbackName) {
+        let response;
+        try {
+            response = await fetch("/api" + path, { headers: { Authorization: "Bearer " + session.token } });
+        } catch (e) {
+            throw new ApiError("Cannot reach the server. Is it running?", 0);
+        }
+        if (response.status === 401) throw endSession();
+        if (!response.ok) throw new ApiError("The download failed (" + response.status + ").", response.status);
 
-        const blob = await response.blob();
-        const url = window.URL.createObjectURL(blob);
-        const a = document.createElement("a");
-        a.href = url;
-        a.download = filename;
-        document.body.appendChild(a);
-        a.click();
-        a.remove();
-        window.URL.revokeObjectURL(url);
-    } catch (err) {
-        alert("Failed to export Excel file: " + err.message);
+        const disposition = response.headers.get("Content-Disposition") || "";
+        const match = /filename\*?=(?:UTF-8'')?"?([^";]+)"?/i.exec(disposition);
+        const name = match ? decodeURIComponent(match[1]) : fallbackName;
+
+        const url = URL.createObjectURL(await response.blob());
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = name;
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+        URL.revokeObjectURL(url);
     }
-}
 
-/**
- * Shared logout handler
- */
-function logout() {
-    localStorage.removeItem("jwt_token");
-    window.location.href = "index.html";
-}
+    /** Call at the top of every page except the login page. */
+    function requireLogin() {
+        if (!session.token) {
+            goToLogin();
+            return false;
+        }
+        return true;
+    }
+
+    function logout() {
+        session.clear();
+        goToLogin();
+    }
+
+    global.JF = { api, ApiError, session, download, requireLogin, logout };
+})(window);

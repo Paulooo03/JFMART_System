@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Deliveries - JFMART Admin</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="wireframe-bg">
+    <div class="board-container">
+        <div class="top-nav">
+            <a href="dashboard.html" class="btn btn-gray">Back</a>
+        </div>
+
+        <h2 class="page-title">Deliveries</h2>
+        <div id="page-error" class="error-message"></div>
+
+        <!-- Confirmed orders that do not have a delivery date yet -->
+        <div id="waiting-panel" class="content-panel hidden">
+            <p class="section-title">Confirmed orders waiting for a delivery date</p>
+            <div class="table-wrap">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Order #</th>
+                            <th>Client Name</th>
+                            <th>Items</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="waiting-body"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="content-panel">
+            <p class="panel-instruction">Scheduled and past deliveries. The courier updates their status from the app.</p>
+            <div class="toolbar">
+                <select id="status-filter" class="input compact">
+                    <option value="">All statuses</option>
+                    <option value="ASSIGNED">Assigned</option>
+                    <option value="PREPARING">Preparing</option>
+                    <option value="OUT_FOR_DELIVERY">Out for delivery</option>
+                    <option value="DELIVERED">Delivered</option>
+                    <option value="UNSUCCESSFUL">Unsuccessful</option>
+                </select>
+                <input id="date-filter" class="input compact" type="date">
+                <button id="clear-filters" type="button" class="btn btn-outline btn-small">Clear filters</button>
+            </div>
+
+            <div class="table-wrap">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Order #</th>
+                            <th>Client Name</th>
+                            <th>Deliver To</th>
+                            <th>Scheduled</th>
+                            <th>Status</th>
+                            <th>Details</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="deliveries-body"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <script src="js/api.js"></script>
+    <script src="js/ui.js"></script>
+    <script src="js/deliveries.js"></script>
+</body>
+</html>

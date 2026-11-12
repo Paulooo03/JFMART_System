@@ -62,3 +62,10 @@ allOpen {
 tasks.withType<Test> {
     useJUnitPlatform()
 }
+
+// The admin website lives in ../admin-web; the server serves a copy of it at /admin
+tasks.processResources {
+    from("../admin-web") {
+        into("static/admin")
+    }
+}

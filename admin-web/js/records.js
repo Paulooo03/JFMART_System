@@ -1,68 +1,99 @@
+"use strict";
+
 document.addEventListener("DOMContentLoaded", () => {
-    loadRecords();
+    if (!JF.requireLogin()) return;
+    const { h, money, statusBadge } = UI;
 
-    const exportOrdersBtn = document.getElementById("export-orders-btn");
-    const exportTxnBtn = document.getElementById("export-transactions-btn");
-
-    if (exportOrdersBtn) {
-        exportOrdersBtn.addEventListener("click", () => {
-            downloadExcelFile("/admin/records/export/orders", "Order_History_Report.xlsx");
-        });
-    }
-
-    if (exportTxnBtn) {
-        exportTxnBtn.addEventListener("click", () => {
-            downloadExcelFile("/admin/records/export/transactions", "Client_Transactions_Report.xlsx");
-        });
-    }
-});
-
-async function loadRecords() {
+    const errorBox = document.getElementById("page-error");
+    const select = document.getElementById("client-select");
+    const exportButton = document.getElementById("export-btn");
+    const summaryBox = document.getElementById("summary");
     const historyBox = document.getElementById("order-history-view");
-    const txnBox = document.getElementById("client-transactions-view");
+    const transactionsBox = document.getElementById("client-transactions-view");
 
-    historyBox.innerHTML = "<p>Loading history...</p>";
-    txnBox.innerHTML = "<p>Loading transactions...</p>";
-
-    try {
-        const [history, transactions] = await Promise.all([
-            fetchWithAuth("/admin/records/history"),
-            fetchWithAuth("/admin/records/transactions")
-        ]);
-
-        // 1. Order History
-        historyBox.innerHTML = "";
-        if (!history || history.length === 0) {
-            historyBox.innerHTML = "<p style='color:#94A3B8;'>No historical orders logged.</p>";
-        } else {
-            history.forEach(item => {
-                historyBox.innerHTML += `
-                    <div style="border-bottom: 1px solid #263540; padding: 10px 0;">
-                        <div style="font-weight:600;">Order #${item.id} - ${item.clientName}</div>
-                        <div style="font-size:13px; color:#94A3B8;">Date: ${item.date} | Total: ₱${item.totalAmount}</div>
-                        <div style="font-size:12px; color:#34D399;">Status: ${item.status}</div>
-                    </div>
-                `;
-            });
-        }
-
-        // 2. Client Transactions (Includes Invoice # as per FR-11)
-        txnBox.innerHTML = "";
-        if (!transactions || transactions.length === 0) {
-            txnBox.innerHTML = "<p style='color:#94A3B8;'>No transaction logs found.</p>";
-        } else {
-            transactions.forEach(tx => {
-                txnBox.innerHTML += `
-                    <div style="border-bottom: 1px solid #263540; padding: 10px 0;">
-                        <div style="font-weight:600;">Invoice #${tx.invoiceNumber}</div>
-                        <div style="font-size:13px; color:#94A3B8;">Client: ${tx.clientName}</div>
-                        <div style="font-size:13px; color:#80C4F6;">Amount: ₱${tx.amount} (${tx.paymentType})</div>
-                    </div>
-                `;
-            });
-        }
-    } catch (err) {
-        historyBox.innerHTML = "<p style='color:#F87171;'>Error loading history logs.</p>";
-        txnBox.innerHTML = "<p style='color:#F87171;'>Error loading transactions.</p>";
+    function stat(value, label, alert) {
+        return h("div", { class: "card-stat" + (alert ? " alert" : "") }, h("div", { class: "value", text: value }), h("div", { class: "label", text: label }));
     }
-}
+
+    async function loadClients() {
+        const clients = await JF.api.get("/admin/clients");
+        select.append(h("option", { value: "", text: "Choose a client..." }));
+        clients
+            .filter((c) => c.accountStatus !== "PENDING_APPROVAL")
+            .forEach((c) => select.append(h("option", { value: String(c.clientId), text: c.hospitalName })));
+        const preset = UI.queryParam("clientId");
+        if (preset) {
+            select.value = preset;
+            await loadRecords();
+        }
+    }
+
+    async function loadRecords() {
+        const clientId = select.value;
+        exportButton.disabled = !clientId;
+        UI.clear(summaryBox);
+        if (!clientId) {
+            UI.clear(historyBox).append(h("p", { class: "muted", text: "Choose a client to see their orders." }));
+            UI.clear(transactionsBox).append(h("p", { class: "muted", text: "Choose a client to see their invoices and payments." }));
+            return;
+        }
+
+        try {
+            const [statement, orders] = await Promise.all([
+                JF.api.get("/admin/clients/" + clientId + "/statement"),
+                JF.api.get("/admin/orders?clientId=" + clientId),
+            ]);
+            errorBox.textContent = "";
+
+            summaryBox.append(
+                stat(money(statement.totalInvoiced), "Total invoiced"),
+                stat(money(statement.totalPaid), "Total paid"),
+                stat(money(statement.outstandingBalance), "Outstanding balance"),
+                stat(money(statement.overdueBalance), "Overdue", Number(statement.overdueBalance) > 0)
+            );
+
+            UI.clear(historyBox);
+            if (orders.length === 0) historyBox.append(h("p", { class: "muted", text: "No orders yet." }));
+            orders.forEach((order) =>
+                historyBox.append(
+                    h(
+                        "div",
+                        { class: "row" },
+                        h("div", { class: "title" }, order.referenceNumber + " ", statusBadge(order.status)),
+                        h("div", { class: "muted", text: "Ordered " + UI.fmtDate(order.createdAt) + (order.deliveredAt ? " · Delivered " + UI.fmtDate(order.deliveredAt) : "") }),
+                        h("div", { text: order.items.length + " item(s) · " + money(order.totalAmount) })
+                    )
+                )
+            );
+
+            UI.clear(transactionsBox);
+            if (statement.invoices.length === 0) transactionsBox.append(h("p", { class: "muted", text: "No invoices yet." }));
+            statement.invoices.forEach((invoice) =>
+                transactionsBox.append(
+                    h(
+                        "div",
+                        { class: "row" },
+                        h("div", { class: "title" }, (invoice.salesInvoiceNumber ? "Invoice " + invoice.salesInvoiceNumber : "No sales invoice no. yet") + " ", statusBadge(invoice.paymentStatus)),
+                        h("div", { class: "muted", text: "Order " + (invoice.orderReference || "") + " · Invoiced " + UI.fmtDate(invoice.startDate) + " · Due " + UI.fmtDate(invoice.dueDate) }),
+                        h("div", { text: "Amount " + money(invoice.amount) + " · Paid " + money(invoice.amountPaid) + " · Balance " + money(invoice.balance) }),
+                        ...invoice.payments.map((p) =>
+                            h("div", { class: "muted", text: "Paid " + money(p.amountPaid) + " on " + UI.fmtDate(p.paymentDate) + " (" + p.paymentMethod + (p.referenceNumber ? ", ref. " + p.referenceNumber : "") + ")" })
+                        )
+                    )
+                )
+            );
+        } catch (error) {
+            UI.showError(errorBox, error);
+        }
+    }
+
+    select.addEventListener("change", loadRecords);
+    exportButton.addEventListener("click", () =>
+        UI.runAction(exportButton, errorBox, async () => {
+            await JF.download("/admin/clients/" + select.value + "/export", "client-records.xlsx");
+            UI.toast("The Excel file was downloaded.");
+        })
+    );
+
+    loadClients().catch((error) => UI.showError(errorBox, error));
+});

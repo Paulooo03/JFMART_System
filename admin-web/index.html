@@ -14,14 +14,18 @@
             <h2>Admin Login</h2>
             <form id="login-form">
                 <div class="form-group">
-                    <input type="password" id="password" placeholder="Password" required>
+                    <input type="text" id="username" placeholder="Username" autocomplete="username" required>
                 </div>
-                <button type="submit" class="btn btn-gray">Login</button>
+                <div class="form-group">
+                    <input type="password" id="password" placeholder="Password" autocomplete="current-password" required>
+                </div>
+                <button type="submit" id="login-button" class="btn btn-gray">Login</button>
             </form>
             <div id="login-error" class="error-message"></div>
         </div>
     </div>
     <script src="js/api.js"></script>
+    <script src="js/ui.js"></script>
     <script src="js/auth.js"></script>
 </body>
 

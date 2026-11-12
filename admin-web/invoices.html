@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Invoices &amp; Payments - JFMART Admin</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="wireframe-bg">
+    <div class="board-container">
+        <div class="top-nav">
+            <a href="dashboard.html" class="btn btn-gray">Back</a>
+        </div>
+
+        <h2 class="page-title">Invoices &amp; payments</h2>
+        <div id="page-error" class="error-message"></div>
+
+        <div class="content-panel">
+            <p class="panel-instruction">An invoice is created when an order is delivered and is due 30 days later. Enter the sales invoice number from your paper series, and record payments as they arrive.</p>
+            <div class="toolbar">
+                <select id="client-filter" class="input compact"></select>
+                <select id="status-filter" class="input compact">
+                    <option value="">All payment statuses</option>
+                    <option value="UNPAID">Unpaid</option>
+                    <option value="PARTIALLY_PAID">Partially paid</option>
+                    <option value="PAID">Paid</option>
+                </select>
+                <label class="check"><input id="overdue-filter" type="checkbox"> Overdue only</label>
+                <span class="spacer"></span>
+                <strong id="balance-total"></strong>
+            </div>
+
+            <div class="table-wrap">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Invoice #</th>
+                            <th>Sales Invoice No.</th>
+                            <th>Client / Order</th>
+                            <th>Invoice Date</th>
+                            <th>Due Date</th>
+                            <th class="num">Amount</th>
+                            <th class="num">Paid</th>
+                            <th class="num">Balance</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="invoices-body"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <script src="js/api.js"></script>
+    <script src="js/ui.js"></script>
+    <script src="js/invoices.js"></script>
+</body>
+</html>

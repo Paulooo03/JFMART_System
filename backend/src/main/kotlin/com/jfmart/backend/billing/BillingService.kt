@@ -11,6 +11,8 @@ import org.springframework.web.server.ResponseStatusException
 import java.math.BigDecimal
 import java.time.LocalDate
 
+data class ClientDues(val outstanding: BigDecimal, val overdue: BigDecimal, val nextDueDate: LocalDate?)
+
 @Service
 class BillingService(
     private val invoiceRepository: InvoiceRepository,
@@ -102,11 +104,26 @@ class BillingService(
         )
     }
 
-    /** Outstanding balance for every client that has been invoiced. */
+    /** What each invoiced client owes: the balance, the overdue part, and the earliest unpaid due date. */
     @Transactional(readOnly = true)
-    fun outstandingByClient(): Map<Long, BigDecimal> {
-        val paid = paymentRepository.totalsByClient().associate { it.clientId to it.total }
-        return invoiceRepository.totalsByClient().associate { it.clientId to it.total - (paid[it.clientId] ?: BigDecimal.ZERO) }
+    fun duesByClient(): Map<Long, ClientDues> {
+        val today = LocalDate.now()
+        val paid = paymentRepository.totalsByInvoice().associate { it.invoiceId to it.total }
+        return invoiceRepository.findAll().groupBy { it.clientId }.mapValues { (_, invoices) ->
+            var outstanding = BigDecimal.ZERO
+            var overdue = BigDecimal.ZERO
+            var nextDue: LocalDate? = null
+            invoices.forEach { invoice ->
+                val balance = invoice.amount - (paid[invoice.invoiceNumber] ?: BigDecimal.ZERO)
+                if (balance.signum() > 0) {
+                    outstanding += balance
+                    if (invoice.dueDate.isBefore(today)) overdue += balance
+                    val earliest = nextDue
+                    if (earliest == null || invoice.dueDate.isBefore(earliest)) nextDue = invoice.dueDate
+                }
+            }
+            ClientDues(outstanding, overdue, nextDue)
+        }
     }
 
     // ---- helpers ----

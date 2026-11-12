@@ -11,33 +11,60 @@
         <div class="top-nav">
             <a href="dashboard.html" class="btn btn-gray">Back</a>
         </div>
-        
+
         <h2 class="page-title">Client list</h2>
+        <div id="page-error" class="error-message"></div>
+
+        <!-- Shown only while new sign-ups are waiting for approval -->
+        <div id="pending-panel" class="content-panel hidden">
+            <div class="panel-header-actions">
+                <p class="section-title">Waiting for approval</p>
+            </div>
+            <div class="table-wrap">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Client / Hospital Name</th>
+                            <th>Contact Info</th>
+                            <th>Delivery Address</th>
+                            <th>Username</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="pending-body"></tbody>
+                </table>
+            </div>
+        </div>
 
         <div class="content-panel">
             <div class="panel-header-actions">
-                <p class="panel-instruction">Display client list, client details, and payment deadline</p>
+                <p class="panel-instruction">Client details, outstanding balance and payment deadline</p>
                 <button id="add-client-btn" class="btn btn-primary">+ Add New Client</button>
             </div>
-            
-            <table class="data-table" id="clients-table">
-                <thead>
-                    <tr>
-                        <th>Client / Hospital Name</th>
-                        <th>Contact Info</th>
-                        <th>Delivery Address</th>
-                        <th>Outstanding Balance</th>
-                        <th>30-Day Payment Status</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody id="clients-list-body">
-                    <!-- Dynamic client data loaded via JS -->
-                </tbody>
-            </table>
+            <div class="toolbar">
+                <input id="client-search" class="input compact" type="search" placeholder="Search clients">
+            </div>
+
+            <div class="table-wrap">
+                <table class="data-table" id="clients-table">
+                    <thead>
+                        <tr>
+                            <th>Client / Hospital Name</th>
+                            <th>Contact Info</th>
+                            <th>Delivery Address</th>
+                            <th class="num">Outstanding Balance</th>
+                            <th>30-Day Payment Status</th>
+                            <th>Account</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="clients-list-body"></tbody>
+                </table>
+            </div>
         </div>
     </div>
     <script src="js/api.js"></script>
+    <script src="js/ui.js"></script>
     <script src="js/clients.js"></script>
 </body>
 </html>

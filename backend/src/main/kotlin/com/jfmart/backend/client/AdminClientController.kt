@@ -9,6 +9,7 @@ import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.server.ResponseStatusException
 import java.math.BigDecimal
+import java.time.LocalDate
 
 data class PendingClientResponse(
     val userId: Long,
@@ -33,7 +34,10 @@ data class ClientSummaryResponse(
     val email: String,
     val deliveryAddress: String,
     val department: String?,
-    val outstandingBalance: BigDecimal
+    val outstandingBalance: BigDecimal,
+    val overdueBalance: BigDecimal,
+    /** Earliest due date among unpaid invoices; in the past means overdue. Null when nothing is owed. */
+    val nextDueDate: LocalDate?
 )
 
 /** Client management for the admin. Access is restricted to ROLE_ADMIN in SecurityConfig. */
@@ -52,7 +56,7 @@ class AdminClientController(
         val users = userRepository.findAll()
             .filter { it.role == Role.ROLE_CLIENT && it.clientId != null && (status == null || it.status == status) }
         val clients = clientRepository.findAllById(users.mapNotNull { it.clientId }).associateBy { it.id }
-        val balances = billingService.outstandingByClient()
+        val dues = billingService.duesByClient()
         return users.mapNotNull { user ->
             val client = clients[user.clientId] ?: return@mapNotNull null
             ClientSummaryResponse(
@@ -66,7 +70,9 @@ class AdminClientController(
                 email = client.email,
                 deliveryAddress = client.deliveryAddress,
                 department = client.department,
-                outstandingBalance = balances[client.id] ?: BigDecimal.ZERO
+                outstandingBalance = dues[client.id]?.outstanding ?: BigDecimal.ZERO,
+                overdueBalance = dues[client.id]?.overdue ?: BigDecimal.ZERO,
+                nextDueDate = dues[client.id]?.nextDueDate
             )
         }.sortedBy { it.hospitalName.lowercase() }
     }

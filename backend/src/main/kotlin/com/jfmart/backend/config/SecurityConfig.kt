@@ -29,9 +29,21 @@ class SecurityConfig(private val jwtAuthFilter: JwtAuthFilter) {
             .logout { it.disable() }
             .sessionManagement { it.sessionCreationPolicy(SessionCreationPolicy.STATELESS) }
             .exceptionHandling { it.authenticationEntryPoint(HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED)) }
+            .headers { headers ->
+                // The admin site only loads its own files; this also stops injected text from running as script
+                headers.contentSecurityPolicy {
+                    it.policyDirectives(
+                        "default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; " +
+                            "connect-src 'self'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'"
+                    )
+                }
+                headers.frameOptions { it.deny() }
+            }
             .authorizeHttpRequests {
                 // Error responses (400/403/409...) are dispatched to /error; without this they all become 401
                 it.requestMatchers("/error").permitAll()
+                // The admin web pages are plain files; the data behind them is protected by /api/admin/**
+                it.requestMatchers("/", "/admin", "/admin/", "/admin/**").permitAll()
                 it.requestMatchers("/api/auth/**").permitAll()
                 it.requestMatchers("/api/admin/**").hasAuthority("ROLE_ADMIN")
                 it.requestMatchers("/api/courier/**").hasAuthority("ROLE_DELIVERY")

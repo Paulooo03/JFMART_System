@@ -13,28 +13,36 @@
         </div>
 
         <h2 class="page-title">Records</h2>
+        <div id="page-error" class="error-message"></div>
+
+        <div class="toolbar">
+            <select id="client-select" class="input compact"></select>
+            <span class="spacer"></span>
+            <button id="export-btn" type="button" class="btn btn-gray btn-small" disabled>Export to Excel</button>
+        </div>
+
+        <div id="summary" class="cards"></div>
 
         <div class="records-dual-panel">
             <!-- Panel 1: Order History -->
             <div class="record-box">
-                <h3>Display order history</h3>
+                <h3>Order history</h3>
                 <div class="record-scroll-view" id="order-history-view">
-                    <!-- History entries rendered here -->
+                    <p class="muted">Choose a client to see their orders.</p>
                 </div>
-                <button id="export-orders-btn" class="btn btn-gray export-btn">Export</button>
             </div>
 
             <!-- Panel 2: Client Transactions -->
             <div class="record-box">
-                <h3>Display client transactions</h3>
+                <h3>Client transactions</h3>
                 <div class="record-scroll-view" id="client-transactions-view">
-                    <!-- Invoice and transaction entries rendered here -->
+                    <p class="muted">Choose a client to see their invoices and payments.</p>
                 </div>
-                <button id="export-transactions-btn" class="btn btn-gray export-btn">Export</button>
             </div>
         </div>
     </div>
     <script src="js/api.js"></script>
+    <script src="js/ui.js"></script>
     <script src="js/records.js"></script>
 </body>
 </html>

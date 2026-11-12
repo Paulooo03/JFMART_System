@@ -1,7 +1,10 @@
 package com.jfmart.backend.client
 
 import com.jfmart.backend.auth.AuthPrincipal
+import com.jfmart.backend.auth.Role
+import com.jfmart.backend.auth.User
 import com.jfmart.backend.auth.UserRepository
+import com.jfmart.backend.auth.UserStatus
 import jakarta.validation.Valid
 import jakarta.validation.constraints.Email
 import jakarta.validation.constraints.NotBlank
@@ -9,6 +12,7 @@ import jakarta.validation.constraints.Size
 import org.springframework.http.HttpStatus
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.security.core.annotation.AuthenticationPrincipal
+import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.server.ResponseStatusException
@@ -26,6 +30,17 @@ data class ClientProfileResponse(
 
 /** What a client may change about themselves; the hospital name is changed by the admin only. */
 data class UpdateClientProfileRequest(
+    @field:NotBlank @field:Size(max = 256) val contactPerson: String,
+    @field:NotBlank @field:Size(max = 32) val phoneNumber: String,
+    @field:NotBlank @field:Email @field:Size(max = 256) val email: String,
+    @field:NotBlank @field:Size(max = 512) val deliveryAddress: String,
+    @field:Size(max = 256) val department: String? = null
+)
+
+data class AdminCreateClientRequest(
+    @field:NotBlank @field:Size(max = 256) val username: String,
+    @field:NotBlank @field:Size(min = 8, max = 72) val password: String,
+    @field:NotBlank @field:Size(max = 256) val hospitalName: String,
     @field:NotBlank @field:Size(max = 256) val contactPerson: String,
     @field:NotBlank @field:Size(max = 32) val phoneNumber: String,
     @field:NotBlank @field:Email @field:Size(max = 256) val email: String,
@@ -86,8 +101,39 @@ class ClientProfileController(
 @RequestMapping("/api/admin/clients")
 class AdminClientProfileController(
     private val clientRepository: ClientRepository,
-    private val userRepository: UserRepository
+    private val userRepository: UserRepository,
+    private val passwordEncoder: PasswordEncoder
 ) {
+
+    /** Adds a client and its login directly; unlike self sign-up the account is active straight away. */
+    @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
+    @Transactional
+    fun create(@Valid @RequestBody request: AdminCreateClientRequest): ClientProfileResponse {
+        if (userRepository.existsByUsername(request.username)) {
+            throw ResponseStatusException(HttpStatus.CONFLICT, "Username is already taken")
+        }
+        val client = clientRepository.save(
+            Client(
+                hospitalName = request.hospitalName.trim(),
+                contactPerson = request.contactPerson.trim(),
+                phoneNumber = request.phoneNumber.trim(),
+                email = request.email.trim(),
+                deliveryAddress = request.deliveryAddress.trim(),
+                department = request.department?.trim()?.takeIf { it.isNotEmpty() }
+            )
+        )
+        userRepository.save(
+            User(
+                username = request.username.trim(),
+                passwordHash = passwordEncoder.encode(request.password)!!,
+                role = Role.ROLE_CLIENT,
+                status = UserStatus.ACTIVE,
+                clientId = client.id
+            )
+        )
+        return client.toProfile(request.username.trim())
+    }
 
     @PutMapping("/{clientId}")
     @Transactional
